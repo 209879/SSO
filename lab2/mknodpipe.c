@@ -51,7 +51,14 @@ int main(int argc, char* argv[]){
 
     pid_t pid = run_mplayer();
 
-    apply_command("loadfile /home/weronika/etno.mp3\n");
+    char file[20];
+    char load[30] = "loadfile ";
+    char end[] = " \n";
+
+    strcpy(file, argv[1]);
+    strcat(load, file);
+    strcat(load, end);
+    apply_command(load);
 
 
     while(1)

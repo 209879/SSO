@@ -4,23 +4,34 @@
 #include <sys/stat.h>
 #include <signal.h>
 #include <unistd.h>
+#include <string.h>
 
+
+char fifo_pipe[] = "/tmp/music";
+
+void apply_command(char* cmd)
+{
+    int fdes = open(fifo_pipe, O_WRONLY);
+    if (fdes<0) perror("fifo_cant_open");
+    write(fdes, cmd, strlen(cmd));
+    close(fdes);    
+}
 
 int main(int argc, char* argv[]){
 
     char ch;
-    int fdes,res;
+    int res;
 
     char msg_1[] = "pause\n";
     char msg_2[] = "quit\n";
+    char msg_3[] = "seek 3\n";
 
 
-    unlink("/tmp/music");
-    res = mknod("/tmp/music", S_IFIFO|0666, 0);
+    unlink(fifo_pipe);
+    res = mknod(fifo_pipe, S_IFIFO|0777, 0);
     if (res<0) perror("fifo_not_ceated");
 
-    fdes = open("/tmp/music", O_WRONLY);
-    if (fdes<0) perror("fifo_cant_open");
+    apply_command("loadfile /home/weronika/etno.mp3\n");
 
 
     while(1)
@@ -34,18 +45,21 @@ int main(int argc, char* argv[]){
         {
             case 'p': 
                 printf("paused\n");
-                write(fdes, msg_1, sizeof(msg_1));
+                apply_command(msg_1);
                 break;
             case 'c': 
                 printf("closed\n");
-                write(fdes, msg_2, sizeof(msg_2));
+                apply_command(msg_2);
+                break;
+            case 's': 
+                printf("seeked 3\n");
+                apply_command(msg_3);
                 break;
             default:
                 printf("wrong command\n");
                 break;
         }
     }
-    close(fdes);
     return 0;
 }
 

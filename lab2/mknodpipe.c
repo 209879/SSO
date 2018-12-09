@@ -17,6 +17,24 @@ void apply_command(char* cmd)
     close(fdes);    
 }
 
+int run_mplayer()
+{
+    pid_t processId = fork();
+
+    if (processId == 0)
+    {
+        printf("running mplayer\n");
+        char cmd[256];
+        snprintf(cmd, 256, "mplayer -quiet -fs -slave -idle -input file=%s", fifo_pipe);
+        int status = system(cmd);
+        exit(status);
+    }
+    else 
+    {
+        return processId;
+    }
+}
+
 int main(int argc, char* argv[]){
 
     char ch;
@@ -30,6 +48,8 @@ int main(int argc, char* argv[]){
     unlink(fifo_pipe);
     res = mknod(fifo_pipe, S_IFIFO|0777, 0);
     if (res<0) perror("fifo_not_ceated");
+
+    pid_t pid = run_mplayer();
 
     apply_command("loadfile /home/weronika/etno.mp3\n");
 

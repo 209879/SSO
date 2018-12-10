@@ -5,7 +5,7 @@
 #include <unistd.h>
 #include <string.h> 
 #include <sys/socket.h> 
- #include <arpa/inet.h>
+#include <arpa/inet.h>
 
 #define MAX 80 
 #define PORT 8080 
@@ -14,21 +14,16 @@
 void chat(int socketfd) 
 { 
     char buff[MAX]; 
-    int n, len; 
+    int n; 
     while(1) { 
         bzero(buff, sizeof(buff)); 
         printf("Write a meesage : "); 
         n = 0; 
-
         while ((buff[n++] = getchar()) != '\n') 
             ; 
-                sendto(sockfd, buff, sizeof(buff),  
-        MSG_CONFIRM, (const struct sockaddr *) &cliaddr, 
-            len); 
+        write(socketfd, buff, sizeof(buff)); 
         bzero(buff, sizeof(buff)); 
-            n = recvfrom(sockfd, buff, MAXLINE,  
-                MSG_WAITALL, ( struct sockaddr *) &cliaddr, 
-                &len);  
+        read(socketfd, buff, sizeof(buff)); 
         printf("from Server : %s", buff); 
         if ((strncmp(buff, "exit", 4)) == 0) { 
             printf("client exit...\n"); 

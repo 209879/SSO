@@ -14,16 +14,21 @@
 void chat(int socketfd) 
 { 
     char buff[MAX]; 
-    int n; 
+    int n, len; 
     while(1) { 
         bzero(buff, sizeof(buff)); 
         printf("Write a meesage : "); 
         n = 0; 
+
         while ((buff[n++] = getchar()) != '\n') 
             ; 
-        write(socketfd, buff, sizeof(buff)); 
+                sendto(sockfd, buff, sizeof(buff),  
+        MSG_CONFIRM, (const struct sockaddr *) &cliaddr, 
+            len); 
         bzero(buff, sizeof(buff)); 
-        read(socketfd, buff, sizeof(buff)); 
+            n = recvfrom(sockfd, buff, MAXLINE,  
+                MSG_WAITALL, ( struct sockaddr *) &cliaddr, 
+                &len);  
         printf("from Server : %s", buff); 
         if ((strncmp(buff, "exit", 4)) == 0) { 
             printf("client exit...\n"); 

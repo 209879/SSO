@@ -11,6 +11,33 @@
 #define MAX 80 
 #define PORT 8080 
 #define SA struct sockaddr 
+
+void chat(int sockfd) 
+{ 
+    char buff[MAX]; 
+    int n; 
+
+    while(1) { 
+        bzero(buff, MAX); 
+  
+ 
+        read(sockfd, buff, sizeof(buff)); 
+
+        printf("from client: %s\t to client : ", buff); 
+        bzero(buff, MAX); 
+        n = 0; 
+
+        while ((buff[n++] = getchar()) != '\n') ; 
+  
+        write(sockfd, buff, sizeof(buff)); 
+  
+
+        if (strncmp("exit", buff, 4) == 0) { 
+            printf("server exit...\n"); 
+            break; 
+        } 
+    } 
+} 
   
 int main() 
 { 
@@ -58,8 +85,8 @@ int main()
     } 
     else
         printf("server acccepted client\n"); 
-
-    pause();
   
+    chat(connection_fd); 
+
     close(socket_fd); 
 } 
